@@ -1,4 +1,4 @@
-FROM centos:7
+FROM centos
 
 ARG USER_ID=14
 ARG GROUP_ID=50
@@ -9,11 +9,12 @@ LABEL Description="vsftpd Docker image based on Centos 7. Supports passive mode 
 	Usage="docker run -d -p [HOST PORT NUMBER]:21 -v [HOST FTP HOME]:/home/vsftpd fauria/vsftpd" \
 	Version="1.0"
 
+RUN cd /etc/yum.repos.d/
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
 RUN yum -y update && yum clean all
 RUN yum install -y \
 	vsftpd \
-	db4-utils \
-	db4 \
 	iproute && yum clean all
 
 RUN usermod -u ${USER_ID} ftp
